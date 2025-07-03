@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="5" >
+    <title>Apartment Listings</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Apartment Listings</h1>
+        <div class="filters">
+            <input type="text" id="searchLocation" placeholder="Search by location">
+            <input type="number" id="minPrice" placeholder="Min Price">
+            <input type="number" id="maxPrice" placeholder="Max Price">
+            <input type="number" id="minRooms" placeholder="Min Rooms">
+            <button onclick="applyFilters()">Apply Filters</button>
+        </div>
+        <div class="sort-options">
+            <select id="sortBy" onchange="sortApartments()">
+                <option value="">Sort By</option>
+                <option value="price">Price</option>
+                <option value="rooms">Number of Rooms</option>
+                <option value="location">Location</option>
+            </select>
+        </div>
+    </header>
+
+    <main id="apartmentList">
+        <!-- Apartment items will be dynamically inserted here -->
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        // Sample data for apartments
+        const apartments = [
+            { id: 1, location: 'New York', price: 2500, rooms: 2, details: 'Spacious 2-bedroom apartment in NYC.' },
+            { id: 2, location: 'Los Angeles', price: 3000, rooms: 3, details: 'Modern 3-bedroom apartment in LA.' },
+            { id: 3, location: 'Chicago', price: 2000, rooms: 1, details: 'Cozy 1-bedroom apartment in Chicago.' },
+            // Add more apartments as needed
+        ];
+
+        // Function to display apartments
+        function displayApartments(apartments) {
+            const apartmentList = document.getElementById('apartmentList');
+            apartmentList.innerHTML = ''; // Clear previous listings
+
+            apartments.forEach(apartment => {
+                const apartmentItem = document.createElement('div');
+                apartmentItem.className = 'apartment-item';
+                apartmentItem.innerHTML = `
+                    <h2>${apartment.location}</h2>
+                    <p>Price: $${apartment.price}</p>
+                    <p>Rooms: ${apartment.rooms}</p>
+                    <p>${apartment.details}</p>
+                    <button onclick="viewDetails(${apartment.id})">View Details</button>
+                    <button onclick="deleteApartment(${apartment.id})">Delete</button>
+                `;
+                apartmentList.appendChild(apartmentItem);
+            });
+        }
+
+        // Function to view details of an apartment
+        function viewDetails(id) {
+            const apartment = apartments.find(a => a.id === id);
+            alert(`Details of Apartment ${id}:\n${apartment.details}`);
+        }
+
+        // Function to delete an apartment
+        function deleteApartment(id) {
+            const index = apartments.findIndex(a => a.id === id);
+            if (index > -1) {
+                apartments.splice(index, 1);
+                displayApartments(apartments);
+            }
+        }
+
+        // Function to apply filters
+        function applyFilters() {
+            const searchLocation = document.getElementById('searchLocation').value.toLowerCase();
+            const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
+            const minRooms
+    = parseInt(document.getElementById('minRooms').value) || 0;
+            const filteredApartments = apartments.filter(apartment => {
+                return apartment.location.toLowerCase().includes(searchLocation) &&
+                       apartment.price >= minPrice &&
+                       apartment.price <= maxPrice &&
+                       apartment.rooms >= minRooms;
+            });
+            displayApartments(filteredApartments);
+        }
+
+        // Function to sort apartments
+        function sortApartments() {
+            const sortBy = document.getElementById('sortBy').value;
+            let sortedApartments = [...apartments];
+
+            if (sortBy === 'price') {
+                sortedApartments.sort((a, b) => a.price - b.price);
+            } else if (sortBy === 'rooms') {
+                sortedApartments.sort((a, b) => a.rooms - b.rooms);
+            } else if (sortBy === 'location') {
+                sortedApartments.sort((a, b) => a.location.localeCompare(b.location));
+            }
+
+            displayApartments(sortedApartments);
+        }
+
+        // add page option of adding new aparment and adding new users
+        function addApartment() {
+            const location = prompt("Enter apartment location:");
+            const price = parseFloat(prompt("Enter apartment price:"));
+            const rooms = parseInt(prompt("Enter number of rooms:"));
+            const details = prompt("Enter apartment details:");
+
+            if (location && !isNaN(price) && !isNaN(rooms) && details) {
+                const newApartment = {
+                    id: apartments.length + 1,
+                    location,
+                    price,
+                    rooms,
+                    details
+                };
+                apartments.push(newApartment);
+                displayApartments(apartments);
+            } else {
+                alert("Invalid input. Please try again.");
+            }
+        }
+        // Add a button to add new apartments
+        const addButton = document.createElement('button');
+        addButton.textContent = 'Add New Apartment';
+        addButton.onclick = addApartment;
+        document.body.insertBefore(addButton, document.getElementById('apartmentList'));
+        // Add a button to add new users
+        function addUser() {
+            const username = prompt("Enter new user's name:");
+            if (username) {
+                alert(`User ${username} added successfully!`);
+            } else {
+                alert("Invalid username. Please try again.");
+            }
+        }
+        // Add a button to add new users
+        const userButton = document.createElement('button');
+        userButton.textContent = 'Add New User';
+        userButton.onclick = addUser;
+        document.body.insertBefore(userButton, document.getElementById('apartmentList'));
+
+
+        // Initial display of apartments
+        displayApartments(apartments);
+    </script>
+</body>
+</html>
